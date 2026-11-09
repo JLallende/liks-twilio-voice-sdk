@@ -1,1 +1,140 @@
 
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+  <title>LIKS Voice</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: Arial, sans-serif;
+      background: #101827;
+      color: #ffffff;
+    }
+
+    .panel {
+      width: 90%;
+      max-width: 420px;
+      padding: 30px;
+      background: #1f2937;
+      border-radius: 16px;
+      text-align: center;
+    }
+
+    h1 {
+      margin-top: 0;
+      color: #ffffff;
+    }
+
+    .estado {
+      margin: 20px 0;
+      color: #d1d5db;
+      font-size: 15px;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 9px;
+      background: #16a34a;
+      color: #ffffff;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #15803d;
+    }
+
+    .resultado {
+      margin-top: 20px;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="panel">
+
+    <h1>LIKS Voice</h1>
+
+    <p>Panel de llamadas del CRM</p>
+
+    <div class="estado" id="estado">
+      Micrófono pendiente de verificar
+    </div>
+
+    <button onclick="probarMicrofono()">
+      Probar micrófono
+    </button>
+
+    <div class="resultado" id="resultado"></div>
+
+  </div>
+
+  <script>
+
+    async function probarMicrofono() {
+
+      const estado =
+        document.getElementById("estado");
+
+      const resultado =
+        document.getElementById("resultado");
+
+      try {
+
+        const stream =
+          await navigator.mediaDevices.getUserMedia({
+            audio: true
+          });
+
+        estado.textContent =
+          "🟢 Micrófono disponible";
+
+        estado.style.color = "#4ade80";
+
+        resultado.textContent =
+          "El navegador permite utilizar " +
+          "el micrófono correctamente.";
+
+        // Liberar el micrófono después de probarlo.
+        stream.getTracks().forEach(function(track) {
+          track.stop();
+        });
+
+      } catch (error) {
+
+        estado.textContent =
+          "🔴 No se pudo acceder al micrófono";
+
+        estado.style.color = "#f87171";
+
+        resultado.textContent =
+          error.name + ": " + error.message;
+
+      }
+
+    }
+
+  </script>
+
+</body>
+</html>
+
