@@ -1,343 +1,115 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-
-  <meta name="viewport"
-        content="width=device-width, initial-scale=1.0">
-
-  <title>LIKS Voice</title>
-
-  <script src="https://accounts.google.com/gsi/client"
-          async
-          defer></script>
-
-  <style>
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: Arial, sans-serif;
-      background: #101827;
-      color: #ffffff;
-    }
-
-    .panel {
-      width: 90%;
-      max-width: 420px;
-      padding: 30px;
-      background: #1f2937;
-      border-radius: 16px;
-      text-align: center;
-    }
-
-    h1 {
-      margin-top: 0;
-    }
-
-    .subtitulo {
-      color: #d1d5db;
-    }
-
-    .estado {
-      margin: 20px 0;
-      color: #d1d5db;
-      font-size: 15px;
-      line-height: 1.6;
-    }
-
-    button {
-      width: 100%;
-      padding: 14px;
-      border: none;
-      border-radius: 9px;
-      background: #16a34a;
-      color: #ffffff;
-      font-size: 15px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background: #15803d;
-    }
-
-    .resultado {
-      margin-top: 20px;
-      font-size: 14px;
-      line-height: 1.6;
-      overflow-wrap: anywhere;
-    }
-
-    .seccion {
-      margin-top: 24px;
-    }
-
-    .seccion h2 {
-      font-size: 16px;
-      margin-bottom: 14px;
-    }
-
-    .google-container {
-      display: flex;
-      justify-content: center;
-      min-height: 44px;
-    }
-
-    .usuario {
-      margin-top: 14px;
-      color: #93c5fd;
-      font-size: 14px;
-      overflow-wrap: anywhere;
-    }
-
-    .aviso {
-      margin-top: 22px;
-      color: #9ca3af;
-      font-size: 12px;
-      line-height: 1.6;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LIKS Voice</title>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+*{box-sizing:border-box}body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#101827;color:#fff;font-family:Arial,sans-serif;padding:20px}.panel{width:100%;max-width:440px;background:#1f2937;padding:28px;border-radius:16px;text-align:center}h1{margin:0 0 10px}h2{font-size:16px;margin:24px 0 12px}.subtitulo,.detalle{color:#cbd5e1}.estado{margin:16px 0;line-height:1.55;color:#d1d5db;overflow-wrap:anywhere}.google-container{display:flex;justify-content:center;min-height:44px}button{width:100%;padding:14px;border:0;border-radius:9px;background:#16a34a;color:white;font-size:15px;font-weight:bold;cursor:pointer}button:hover{background:#15803d}button:disabled{opacity:.5;cursor:not-allowed}.detalle{font-size:13px;line-height:1.6;overflow-wrap:anywhere}.aviso{margin-top:24px;font-size:12px;color:#9ca3af;line-height:1.6}.separador{border:0;border-top:1px solid #374151;margin:24px 0}
+</style>
 </head>
-
 <body>
-
-  <div class="panel">
-
-    <h1>LIKS Voice</h1>
-
-    <p class="subtitulo">
-      Panel de llamadas del CRM
-    </p>
-
-    <div class="seccion">
-
-      <h2>Cuenta institucional</h2>
-
-      <div class="google-container"
-           id="googleLogin"></div>
-
-      <div class="estado"
-           id="estadoGoogle">
-        Esperando autenticación de Google Workspace
-      </div>
-
-      <div class="usuario"
-           id="usuarioGoogle"></div>
-
-    </div>
-
-    <div class="seccion">
-
-      <h2>Micrófono</h2>
-
-      <div class="estado" id="estado">
-        Micrófono pendiente de verificar
-      </div>
-
-      <button onclick="probarMicrofono()">
-        Probar micrófono
-      </button>
-
-      <div class="resultado"
-           id="resultado"></div>
-
-    </div>
-
-    <div class="aviso">
-      La conexión de llamadas permanecerá
-      deshabilitada hasta que el servidor
-      valide la identidad institucional
-      y los permisos del usuario.
-    </div>
-
-  </div>
-
-  <script>
-
-    const GOOGLE_CLIENT_ID =
-      "444251489795-ckib5et1sfk71ib27699srg5u6arq748.apps.googleusercontent.com";
-
-    let googleCredentialTemporal = null;
-
-    function actualizarEstadoGoogle(
-      mensaje,
-      color
-    ) {
-
-      const elemento =
-        document.getElementById("estadoGoogle");
-
-      elemento.textContent = mensaje;
-
-      elemento.style.color =
-        color || "#d1d5db";
-
-    }
-
-    function recibirCredencialGoogle(response) {
-
-      if (
-        !response ||
-        typeof response.credential !== "string" ||
-        !response.credential
-      ) {
-
-        actualizarEstadoGoogle(
-          "No se recibió una credencial válida de Google.",
-          "#f87171"
-        );
-
-        return;
-
-      }
-
-      // La credencial es temporal.
-      // No se guarda en localStorage,
-      // sessionStorage ni en la URL.
-      googleCredentialTemporal =
-        response.credential;
-
-      actualizarEstadoGoogle(
-        "Identidad recibida. Pendiente de verificación por el servidor.",
-        "#facc15"
-      );
-
-      document.getElementById(
-        "usuarioGoogle"
-      ).textContent =
-        "Google respondió correctamente. " +
-        "El acceso a llamadas aún no está autorizado.";
-
-      // IMPORTANTE:
-      // No interpretar el JWT en el navegador
-      // como prueba de autorización.
-      //
-      // En el siguiente archivo conectaremos
-      // esta credencial con un servidor que
-      // verifique firma, audiencia, emisor,
-      // vigencia y cuenta institucional.
-      //
-      // Después se consultará el rol del CRM.
-
-    }
-
-    function inicializarGoogle() {
-
-      if (
-        !window.google ||
-        !google.accounts ||
-        !google.accounts.id
-      ) {
-
-        actualizarEstadoGoogle(
-          "No se pudo cargar Google Identity Services.",
-          "#f87171"
-        );
-
-        return;
-
-      }
-
-      google.accounts.id.initialize({
-
-        client_id: GOOGLE_CLIENT_ID,
-
-        callback: recibirCredencialGoogle,
-
-        auto_select: false,
-
-        cancel_on_tap_outside: true
-
+<main class="panel">
+<h1>LIKS Voice</h1>
+<p class="subtitulo">Panel de llamadas del CRM</p>
+<h2>Cuenta institucional</h2>
+<div id="googleLogin" class="google-container"></div>
+<div id="estadoGoogle" class="estado" role="status" aria-live="polite">Esperando autenticación de Google Workspace</div>
+<div id="usuarioGoogle" class="detalle"></div>
+<hr class="separador">
+<h2>Micrófono</h2>
+<div id="estadoMicrofono" class="estado">Micrófono pendiente de verificar</div>
+<button id="btnMicrofono" type="button">Probar micrófono</button>
+<div id="resultadoMicrofono" class="detalle"></div>
+<hr class="separador">
+<h2>Conexión de llamadas</h2>
+<div id="estadoLlamadas" class="estado">Pendiente de autorización del CRM</div>
+<button type="button" disabled title="Se habilitará cuando el servidor compruebe el rol y emita un token Voice">Conectar llamadas (pendiente)</button>
+<p class="aviso">Una cuenta institucional verificada no implica autorización para realizar llamadas. El servidor debe comprobar el rol Admin o Asesor antes de entregar credenciales de Twilio Voice.</p>
+</main>
+<script>
+'use strict';
+const GOOGLE_CLIENT_ID='444251489795-ckib5et1sfk71ib27699srg5u6arq748.apps.googleusercontent.com';
+const AUTH_URL='https://liks-crm-voice-4694.twil.io/auth-google';
+let autenticacionEnCurso=false;
+function estado(id,mensaje,color='#d1d5db'){
+  const elemento=document.getElementById(id);
+  elemento.textContent=mensaje;
+  elemento.style.color=color;
+}
+async function recibirCredencialGoogle(respuesta){
+  if(autenticacionEnCurso)return;
+  if(!respuesta || typeof respuesta.credential!=='string' || !respuesta.credential){
+    estado('estadoGoogle','Google no entregó una credencial válida.','#f87171');
+    return;
+  }
+  autenticacionEnCurso=true;
+  estado('estadoGoogle','Verificando identidad institucional...','#facc15');
+  estado('usuarioGoogle','');
+  try{
+    // Enviamos el ID token directamente al backend; no se guarda en la URL ni en almacenamiento local.
+    const controlador=new AbortController();
+    const timeout=setTimeout(()=>controlador.abort(),15000);
+    let respuestaServidor;
+    try{
+      respuestaServidor=await fetch(AUTH_URL,{
+        method:'POST',
+        headers:{'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'},
+        body:new URLSearchParams({credential:respuesta.credential}).toString(),
+        mode:'cors',
+        cache:'no-store',
+        signal:controlador.signal
       });
-
-      google.accounts.id.renderButton(
-
-        document.getElementById(
-          "googleLogin"
-        ),
-
-        {
-          theme: "outline",
-          size: "large",
-          text: "continue_with",
-          shape: "rectangular",
-          width: 300
-        }
-
-      );
-
+    }finally{clearTimeout(timeout);}
+    const datos=await respuestaServidor.json();
+    if(!respuestaServidor.ok || !datos.ok || datos.identidadVerificada!==true){
+      throw new Error(datos.mensaje || 'No fue posible verificar la identidad.');
     }
-
-    window.addEventListener(
-      "load",
-      inicializarGoogle
-    );
-
-    async function probarMicrofono() {
-
-      const estado =
-        document.getElementById("estado");
-
-      const resultado =
-        document.getElementById("resultado");
-
-      try {
-
-        if (
-          !navigator.mediaDevices ||
-          !navigator.mediaDevices.getUserMedia
-        ) {
-
-          throw new Error(
-            "El navegador no permite acceder al micrófono."
-          );
-
-        }
-
-        const stream =
-          await navigator.mediaDevices.getUserMedia({
-            audio: true
-          });
-
-        estado.textContent =
-          "🟢 Micrófono disponible";
-
-        estado.style.color = "#4ade80";
-
-        resultado.textContent =
-          "El navegador permite utilizar " +
-          "el micrófono correctamente.";
-
-        stream.getTracks().forEach(
-          function(track) {
-            track.stop();
-          }
-        );
-
-      } catch (error) {
-
-        estado.textContent =
-          "🔴 No se pudo acceder al micrófono";
-
-        estado.style.color = "#f87171";
-
-        resultado.textContent =
-          error.name + ": " + error.message;
-
-      }
-
-    }
-
-  </script>
-
+    estado('estadoGoogle','Identidad institucional verificada por el servidor.','#4ade80');
+    estado('usuarioGoogle',datos.nombre ? datos.nombre+' · '+datos.email : datos.email || 'Cuenta institucional verificada','#93c5fd');
+    // Esta primera fase NO concede acceso a llamadas: autorizado debe validarse contra el CRM.
+    estado('estadoLlamadas','Identidad confirmada. Falta verificar el rol Admin/Asesor en el CRM.','#facc15');
+  }catch(error){
+    const mensaje=error.name==='AbortError'
+      ? 'La verificación tardó demasiado. Intenta de nuevo.'
+      : error instanceof TypeError
+        ? 'No se pudo conectar con Twilio. Revisaremos CORS o la conexión.'
+        : error.message;
+    estado('estadoGoogle',mensaje,'#f87171');
+    estado('estadoLlamadas','Llamadas deshabilitadas.','#f87171');
+  }finally{autenticacionEnCurso=false;}
+}
+function inicializarGoogle(){
+  if(!window.google?.accounts?.id){
+    estado('estadoGoogle','No se pudo cargar Google Identity Services.','#f87171');
+    return;
+  }
+  google.accounts.id.initialize({client_id:GOOGLE_CLIENT_ID,callback:recibirCredencialGoogle,auto_select:false});
+  google.accounts.id.renderButton(document.getElementById('googleLogin'),{
+    theme:'outline',size:'large',text:'continue_with',shape:'rectangular',width:300
+  });
+}
+async function probarMicrofono(){
+  const boton=document.getElementById('btnMicrofono');
+  boton.disabled=true;
+  let stream;
+  try{
+    if(!navigator.mediaDevices?.getUserMedia)throw new Error('Este navegador no permite acceder al micrófono.');
+    stream=await navigator.mediaDevices.getUserMedia({audio:true});
+    estado('estadoMicrofono','🟢 Micrófono disponible','#4ade80');
+    estado('resultadoMicrofono','El navegador permite utilizar el micrófono correctamente.');
+  }catch(error){
+    estado('estadoMicrofono','🔴 No se pudo acceder al micrófono','#f87171');
+    estado('resultadoMicrofono',error.name+': '+error.message);
+  }finally{
+    if(stream)stream.getTracks().forEach(track=>track.stop());
+    boton.disabled=false;
+  }
+}
+document.getElementById('btnMicrofono').addEventListener('click',probarMicrofono);
+window.addEventListener('load',inicializarGoogle);
+</script>
 </body>
 </html>
 
