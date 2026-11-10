@@ -3,10 +3,15 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
+
   <meta name="viewport"
         content="width=device-width, initial-scale=1.0">
 
   <title>LIKS Voice</title>
+
+  <script src="https://accounts.google.com/gsi/client"
+          async
+          defer></script>
 
   <style>
     * {
@@ -35,13 +40,17 @@
 
     h1 {
       margin-top: 0;
-      color: #ffffff;
+    }
+
+    .subtitulo {
+      color: #d1d5db;
     }
 
     .estado {
       margin: 20px 0;
       color: #d1d5db;
       font-size: 15px;
+      line-height: 1.6;
     }
 
     button {
@@ -64,6 +73,36 @@
       margin-top: 20px;
       font-size: 14px;
       line-height: 1.6;
+      overflow-wrap: anywhere;
+    }
+
+    .seccion {
+      margin-top: 24px;
+    }
+
+    .seccion h2 {
+      font-size: 16px;
+      margin-bottom: 14px;
+    }
+
+    .google-container {
+      display: flex;
+      justify-content: center;
+      min-height: 44px;
+    }
+
+    .usuario {
+      margin-top: 14px;
+      color: #93c5fd;
+      font-size: 14px;
+      overflow-wrap: anywhere;
+    }
+
+    .aviso {
+      margin-top: 22px;
+      color: #9ca3af;
+      font-size: 12px;
+      line-height: 1.6;
     }
   </style>
 </head>
@@ -74,21 +113,173 @@
 
     <h1>LIKS Voice</h1>
 
-    <p>Panel de llamadas del CRM</p>
+    <p class="subtitulo">
+      Panel de llamadas del CRM
+    </p>
 
-    <div class="estado" id="estado">
-      Micrófono pendiente de verificar
+    <div class="seccion">
+
+      <h2>Cuenta institucional</h2>
+
+      <div class="google-container"
+           id="googleLogin"></div>
+
+      <div class="estado"
+           id="estadoGoogle">
+        Esperando autenticación de Google Workspace
+      </div>
+
+      <div class="usuario"
+           id="usuarioGoogle"></div>
+
     </div>
 
-    <button onclick="probarMicrofono()">
-      Probar micrófono
-    </button>
+    <div class="seccion">
 
-    <div class="resultado" id="resultado"></div>
+      <h2>Micrófono</h2>
+
+      <div class="estado" id="estado">
+        Micrófono pendiente de verificar
+      </div>
+
+      <button onclick="probarMicrofono()">
+        Probar micrófono
+      </button>
+
+      <div class="resultado"
+           id="resultado"></div>
+
+    </div>
+
+    <div class="aviso">
+      La conexión de llamadas permanecerá
+      deshabilitada hasta que el servidor
+      valide la identidad institucional
+      y los permisos del usuario.
+    </div>
 
   </div>
 
   <script>
+
+    const GOOGLE_CLIENT_ID =
+      "444251489795-ckib5et1sfk71ib27699srg5u6arq748.apps.googleusercontent.com";
+
+    let googleCredentialTemporal = null;
+
+    function actualizarEstadoGoogle(
+      mensaje,
+      color
+    ) {
+
+      const elemento =
+        document.getElementById("estadoGoogle");
+
+      elemento.textContent = mensaje;
+
+      elemento.style.color =
+        color || "#d1d5db";
+
+    }
+
+    function recibirCredencialGoogle(response) {
+
+      if (
+        !response ||
+        typeof response.credential !== "string" ||
+        !response.credential
+      ) {
+
+        actualizarEstadoGoogle(
+          "No se recibió una credencial válida de Google.",
+          "#f87171"
+        );
+
+        return;
+
+      }
+
+      // La credencial es temporal.
+      // No se guarda en localStorage,
+      // sessionStorage ni en la URL.
+      googleCredentialTemporal =
+        response.credential;
+
+      actualizarEstadoGoogle(
+        "Identidad recibida. Pendiente de verificación por el servidor.",
+        "#facc15"
+      );
+
+      document.getElementById(
+        "usuarioGoogle"
+      ).textContent =
+        "Google respondió correctamente. " +
+        "El acceso a llamadas aún no está autorizado.";
+
+      // IMPORTANTE:
+      // No interpretar el JWT en el navegador
+      // como prueba de autorización.
+      //
+      // En el siguiente archivo conectaremos
+      // esta credencial con un servidor que
+      // verifique firma, audiencia, emisor,
+      // vigencia y cuenta institucional.
+      //
+      // Después se consultará el rol del CRM.
+
+    }
+
+    function inicializarGoogle() {
+
+      if (
+        !window.google ||
+        !google.accounts ||
+        !google.accounts.id
+      ) {
+
+        actualizarEstadoGoogle(
+          "No se pudo cargar Google Identity Services.",
+          "#f87171"
+        );
+
+        return;
+
+      }
+
+      google.accounts.id.initialize({
+
+        client_id: GOOGLE_CLIENT_ID,
+
+        callback: recibirCredencialGoogle,
+
+        auto_select: false,
+
+        cancel_on_tap_outside: true
+
+      });
+
+      google.accounts.id.renderButton(
+
+        document.getElementById(
+          "googleLogin"
+        ),
+
+        {
+          theme: "outline",
+          size: "large",
+          text: "continue_with",
+          shape: "rectangular",
+          width: 300
+        }
+
+      );
+
+    }
+
+    window.addEventListener(
+      "load",
+      inicializarGoogle
+    );
 
     async function probarMicrofono() {
 
@@ -99,6 +290,17 @@
         document.getElementById("resultado");
 
       try {
+
+        if (
+          !navigator.mediaDevices ||
+          !navigator.mediaDevices.getUserMedia
+        ) {
+
+          throw new Error(
+            "El navegador no permite acceder al micrófono."
+          );
+
+        }
 
         const stream =
           await navigator.mediaDevices.getUserMedia({
@@ -114,10 +316,11 @@
           "El navegador permite utilizar " +
           "el micrófono correctamente.";
 
-        // Liberar el micrófono después de probarlo.
-        stream.getTracks().forEach(function(track) {
-          track.stop();
-        });
+        stream.getTracks().forEach(
+          function(track) {
+            track.stop();
+          }
+        );
 
       } catch (error) {
 
@@ -137,4 +340,5 @@
 
 </body>
 </html>
+
 
