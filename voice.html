@@ -1,116 +1,1403 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+
 <title>LIKS Voice</title>
+
 <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+<!-- SDK oficial Twilio Voice 2.x, alojado en GitHub Pages -->
+<script src="./twilio.min.js" defer></script>
+
 <style>
-*{box-sizing:border-box}body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#101827;color:#fff;font-family:Arial,sans-serif;padding:20px}.panel{width:100%;max-width:440px;background:#1f2937;padding:28px;border-radius:16px;text-align:center}h1{margin:0 0 10px}h2{font-size:16px;margin:24px 0 12px}.subtitulo,.detalle{color:#cbd5e1}.estado{margin:16px 0;line-height:1.55;color:#d1d5db;overflow-wrap:anywhere}.google-container{display:flex;justify-content:center;min-height:44px}button{width:100%;padding:14px;border:0;border-radius:9px;background:#16a34a;color:white;font-size:15px;font-weight:bold;cursor:pointer}button:hover{background:#15803d}button:disabled{opacity:.5;cursor:not-allowed}.detalle{font-size:13px;line-height:1.6;overflow-wrap:anywhere}.aviso{margin-top:24px;font-size:12px;color:#9ca3af;line-height:1.6}.separador{border:0;border-top:1px solid #374151;margin:24px 0}
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #101827;
+  color: #fff;
+  font-family: Arial, sans-serif;
+  padding: 20px;
+}
+
+.panel {
+  width: 100%;
+  max-width: 440px;
+  background: #1f2937;
+  padding: 28px;
+  border-radius: 16px;
+  text-align: center;
+}
+
+h1 {
+  margin: 0 0 10px;
+}
+
+h2 {
+  font-size: 16px;
+  margin: 24px 0 12px;
+}
+
+.subtitulo,
+.detalle {
+  color: #cbd5e1;
+}
+
+.estado {
+  margin: 16px 0;
+  line-height: 1.55;
+  color: #d1d5db;
+  overflow-wrap: anywhere;
+}
+
+.google-container {
+  display: flex;
+  justify-content: center;
+  min-height: 44px;
+}
+
+button {
+  width: 100%;
+  padding: 14px;
+  border: 0;
+  border-radius: 9px;
+  background: #16a34a;
+  color: white;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 8px;
+}
+
+button:hover {
+  background: #15803d;
+}
+
+button:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+.btn-rojo {
+  background: #dc2626;
+}
+
+.btn-rojo:hover {
+  background: #b91c1c;
+}
+
+.btn-gris {
+  background: #475569;
+}
+
+.btn-gris:hover {
+  background: #334155;
+}
+
+.detalle {
+  font-size: 13px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.aviso {
+  margin-top: 24px;
+  font-size: 12px;
+  color: #9ca3af;
+  line-height: 1.6;
+}
+
+.separador {
+  border: 0;
+  border-top: 1px solid #374151;
+  margin: 24px 0;
+}
+
+.oculto {
+  display: none;
+}
+
+.llamada {
+  margin-top: 18px;
+  padding: 15px;
+  border: 1px solid #475569;
+  border-radius: 10px;
+}
+
+.acciones {
+  display: flex;
+  gap: 8px;
+}
+
+.acciones button {
+  flex: 1;
+}
 </style>
 </head>
+
 <body>
+
 <main class="panel">
-<h1>LIKS Voice</h1>
-<p class="subtitulo">Panel de llamadas del CRM</p>
-<h2>Cuenta institucional</h2>
-<div id="googleLogin" class="google-container"></div>
-<div id="estadoGoogle" class="estado" role="status" aria-live="polite">Esperando autenticación de Google Workspace</div>
-<div id="usuarioGoogle" class="detalle"></div>
-<hr class="separador">
-<h2>Micrófono</h2>
-<div id="estadoMicrofono" class="estado">Micrófono pendiente de verificar</div>
-<button id="btnMicrofono" type="button">Probar micrófono</button>
-<div id="resultadoMicrofono" class="detalle"></div>
-<hr class="separador">
-<h2>Conexión de llamadas</h2>
-<div id="estadoLlamadas" class="estado">Pendiente de autorización del CRM</div>
-<button type="button" disabled title="Se habilitará cuando el servidor compruebe el rol y emita un token Voice">Conectar llamadas (pendiente)</button>
-<p class="aviso">Una cuenta institucional verificada no implica autorización para realizar llamadas. El servidor debe comprobar el rol Admin o Asesor antes de entregar credenciales de Twilio Voice.</p>
+
+  <h1>LIKS Voice</h1>
+
+  <p class="subtitulo">
+    Panel de llamadas del CRM
+  </p>
+
+  <h2>Cuenta institucional</h2>
+
+  <div
+    id="googleLogin"
+    class="google-container">
+  </div>
+
+  <div
+    id="estadoGoogle"
+    class="estado"
+    role="status"
+    aria-live="polite">
+    Esperando autenticación de Google Workspace
+  </div>
+
+  <div
+    id="usuarioGoogle"
+    class="detalle">
+  </div>
+
+  <hr class="separador">
+
+  <h2>Micrófono</h2>
+
+  <div
+    id="estadoMicrofono"
+    class="estado">
+    Micrófono pendiente de verificar
+  </div>
+
+  <button
+    id="btnMicrofono"
+    type="button">
+    Probar micrófono
+  </button>
+
+  <div
+    id="resultadoMicrofono"
+    class="detalle">
+  </div>
+
+  <hr class="separador">
+
+  <h2>Conexión de llamadas</h2>
+
+  <div
+    id="estadoLlamadas"
+    class="estado"
+    role="status"
+    aria-live="polite">
+    Pendiente de autorización del CRM
+  </div>
+
+  <button
+    id="btnConectar"
+    type="button"
+    disabled>
+    Conectar llamadas
+  </button>
+
+  <button
+    id="btnDesconectar"
+    type="button"
+    class="btn-rojo oculto">
+    Desconectar llamadas
+  </button>
+
+  <div
+    id="identidadTwilio"
+    class="detalle">
+  </div>
+
+  <section
+    id="panelLlamada"
+    class="llamada oculto">
+
+    <h2>Llamada entrante</h2>
+
+    <div
+      id="detalleLlamada"
+      class="estado">
+    </div>
+
+    <div class="acciones">
+
+      <button
+        id="btnResponder"
+        type="button">
+        Responder
+      </button>
+
+      <button
+        id="btnRechazar"
+        type="button"
+        class="btn-rojo">
+        Rechazar
+      </button>
+
+    </div>
+
+  </section>
+
+  <section
+    id="panelLlamadaActiva"
+    class="llamada oculto">
+
+    <h2>Llamada en curso</h2>
+
+    <div
+      id="estadoLlamadaActiva"
+      class="estado">
+      Conectando audio...
+    </div>
+
+    <button
+      id="btnColgar"
+      type="button"
+      class="btn-rojo">
+      Finalizar llamada
+    </button>
+
+  </section>
+
+  <p class="aviso">
+    El acceso a LIKS Voice está restringido
+    a usuarios institucionales autorizados
+    con rol Admin o Asesor en el CRM.
+  </p>
+
 </main>
+
 <script>
 'use strict';
-const GOOGLE_CLIENT_ID='444251489795-ckib5et1sfk71ib27699srg5u6arq748.apps.googleusercontent.com';
-const AUTH_URL='https://liks-crm-voice-4694.twil.io/auth-google';
-let autenticacionEnCurso=false;
-function estado(id,mensaje,color='#d1d5db'){
-  const elemento=document.getElementById(id);
-  elemento.textContent=mensaje;
-  elemento.style.color=color;
+
+// ==========================================
+// LIKS CRM V2
+// PANEL TWILIO VOICE
+// ==========================================
+
+// ==========================================
+// CONFIGURACIÓN
+// ==========================================
+
+const GOOGLE_CLIENT_ID =
+  '444251489795-ckib5et1sfk71ib27699srg5u6arq748.apps.googleusercontent.com';
+
+const AUTH_URL =
+  'https://liks-crm-voice-4694.twil.io/auth-google';
+
+const TOKEN_URL =
+  'https://liks-crm-voice-4694.twil.io/token';
+
+
+// ==========================================
+// ESTADO DE LA APLICACIÓN
+// ==========================================
+
+let autenticacionEnCurso = false;
+let conexionEnCurso = false;
+let autorizado = false;
+
+let credencialGoogle = null;
+let usuarioAutorizado = null;
+
+let dispositivoTwilio = null;
+let llamadaEntrante = null;
+let llamadaActiva = null;
+
+
+// ==========================================
+// ELEMENTOS HTML
+// ==========================================
+
+const btnConectar =
+  document.getElementById('btnConectar');
+
+const btnDesconectar =
+  document.getElementById('btnDesconectar');
+
+const panelLlamada =
+  document.getElementById('panelLlamada');
+
+const panelLlamadaActiva =
+  document.getElementById('panelLlamadaActiva');
+
+
+// ==========================================
+// MOSTRAR ESTADOS
+// ==========================================
+
+function estado(
+  id,
+  mensaje,
+  color = '#d1d5db'
+) {
+
+  const elemento =
+    document.getElementById(id);
+
+  if (!elemento) return;
+
+  elemento.textContent = mensaje;
+  elemento.style.color = color;
+
 }
-async function recibirCredencialGoogle(respuesta){
-  if(autenticacionEnCurso)return;
-  if(!respuesta || typeof respuesta.credential!=='string' || !respuesta.credential){
-    estado('estadoGoogle','Google no entregó una credencial válida.','#f87171');
-    return;
-  }
-  autenticacionEnCurso=true;
-  estado('estadoGoogle','Verificando identidad institucional...','#facc15');
-  estado('usuarioGoogle','');
-  try{
-    // Enviamos el ID token directamente al backend; no se guarda en la URL ni en almacenamiento local.
-    const controlador=new AbortController();
-    const timeout=setTimeout(()=>controlador.abort(),15000);
-    let respuestaServidor;
-    try{
-      respuestaServidor=await fetch(AUTH_URL,{
-        method:'POST',
-        headers:{'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'},
-        body:new URLSearchParams({credential:respuesta.credential}).toString(),
-        mode:'cors',
-        cache:'no-store',
-        signal:controlador.signal
-      });
-    }finally{clearTimeout(timeout);}
-    const datos=await respuestaServidor.json();
-    if(!respuestaServidor.ok || !datos.ok || datos.identidadVerificada!==true){
-      throw new Error(datos.mensaje || 'No fue posible verificar la identidad.');
+
+
+// ==========================================
+// SOLICITUD SEGURA AL BACKEND
+// ==========================================
+
+async function solicitarBackend(
+  url,
+  credential
+) {
+
+  const controlador =
+    new AbortController();
+
+  const timeout =
+    setTimeout(
+      () => controlador.abort(),
+      20000
+    );
+
+  try {
+
+    const respuesta = await fetch(
+      url,
+      {
+
+        method: 'POST',
+
+        headers: {
+          'Content-Type':
+            'application/x-www-form-urlencoded;charset=UTF-8'
+        },
+
+        body: new URLSearchParams({
+          credential: credential
+        }).toString(),
+
+        mode: 'cors',
+
+        cache: 'no-store',
+
+        signal: controlador.signal
+
+      }
+    );
+
+    let datos;
+
+    try {
+
+      datos = await respuesta.json();
+
+    } catch (_) {
+
+      throw new Error(
+        'Twilio devolvió una respuesta inválida.'
+      );
+
     }
-    estado('estadoGoogle','Identidad institucional verificada por el servidor.','#4ade80');
-    estado('usuarioGoogle',datos.nombre ? datos.nombre+' · '+datos.email : datos.email || 'Cuenta institucional verificada','#93c5fd');
-    // Esta primera fase NO concede acceso a llamadas: autorizado debe validarse contra el CRM.
-    estado('estadoLlamadas','Identidad confirmada. Falta verificar el rol Admin/Asesor en el CRM.','#facc15');
-  }catch(error){
-    const mensaje=error.name==='AbortError'
-      ? 'La verificación tardó demasiado. Intenta de nuevo.'
-      : error instanceof TypeError
-        ? 'No se pudo conectar con Twilio. Revisaremos CORS o la conexión.'
-        : error.message;
-    estado('estadoGoogle',mensaje,'#f87171');
-    estado('estadoLlamadas','Llamadas deshabilitadas.','#f87171');
-  }finally{autenticacionEnCurso=false;}
+
+    if (!respuesta.ok) {
+
+      throw new Error(
+        datos.error ||
+        datos.mensaje ||
+        'Error de autorización del servidor.'
+      );
+
+    }
+
+    return datos;
+
+  } finally {
+
+    clearTimeout(timeout);
+
+  }
+
 }
-function inicializarGoogle(){
-  if(!window.google?.accounts?.id){
-    estado('estadoGoogle','No se pudo cargar Google Identity Services.','#f87171');
+
+
+// ==========================================
+// AUTENTICACIÓN GOOGLE WORKSPACE
+// ==========================================
+
+async function recibirCredencialGoogle(
+  respuesta
+) {
+
+  if (autenticacionEnCurso) return;
+
+  if (
+    !respuesta ||
+    typeof respuesta.credential !== 'string' ||
+    !respuesta.credential
+  ) {
+
+    estado(
+      'estadoGoogle',
+      'Google no entregó una credencial válida.',
+      '#f87171'
+    );
+
     return;
+
   }
-  google.accounts.id.initialize({client_id:GOOGLE_CLIENT_ID,callback:recibirCredencialGoogle,auto_select:false});
-  google.accounts.id.renderButton(document.getElementById('googleLogin'),{
-    theme:'outline',size:'large',text:'continue_with',shape:'rectangular',width:300
+
+  autenticacionEnCurso = true;
+
+  // Una nueva autenticación no debe sustituir
+  // la sesión de voz mientras existan llamadas.
+
+  if (dispositivoTwilio) {
+
+    autenticacionEnCurso = false;
+
+    estado(
+      'estadoGoogle',
+      'Desconecta primero LIKS Voice para cambiar de sesión.',
+      '#facc15'
+    );
+
+    return;
+
+  }
+
+  autorizado = false;
+  credencialGoogle = null;
+  usuarioAutorizado = null;
+
+  btnConectar.disabled = true;
+
+  estado(
+    'estadoGoogle',
+    'Verificando identidad institucional...',
+    '#facc15'
+  );
+
+  estado('usuarioGoogle', '');
+
+  try {
+
+    const datos = await solicitarBackend(
+      AUTH_URL,
+      respuesta.credential
+    );
+
+    if (
+      datos.ok !== true ||
+      datos.identidadVerificada !== true
+    ) {
+
+      throw new Error(
+        datos.mensaje ||
+        'No fue posible verificar la identidad.'
+      );
+
+    }
+
+    estado(
+      'estadoGoogle',
+      'Identidad institucional verificada por el servidor.',
+      '#4ade80'
+    );
+
+    estado(
+      'usuarioGoogle',
+
+      datos.nombre
+        ? datos.nombre + ' · ' + datos.email
+        : datos.email ||
+          'Cuenta institucional verificada',
+
+      '#93c5fd'
+    );
+
+    // ======================================
+    // COMPROBAR AUTORIZACIÓN CRM
+    // ======================================
+
+    if (
+      datos.autorizado !== true ||
+      !['Admin', 'Asesor'].includes(
+        datos.rol
+      )
+    ) {
+
+      estado(
+        'estadoLlamadas',
+        'Cuenta verificada, pero sin permisos para LIKS Voice.',
+        '#f87171'
+      );
+
+      return;
+
+    }
+
+    autorizado = true;
+
+    credencialGoogle =
+      respuesta.credential;
+
+    usuarioAutorizado = {
+
+      email: datos.email,
+
+      nombre: datos.nombre,
+
+      rol: datos.rol
+
+    };
+
+    estado(
+      'estadoLlamadas',
+      'Autorizado como ' +
+      datos.rol +
+      '. Listo para conectar Twilio Voice.',
+      '#4ade80'
+    );
+
+    btnConectar.disabled = false;
+
+  } catch (error) {
+
+    autorizado = false;
+    credencialGoogle = null;
+    usuarioAutorizado = null;
+
+    btnConectar.disabled = true;
+
+    const mensaje =
+      error.name === 'AbortError'
+        ? 'La verificación tardó demasiado.'
+        : error.message;
+
+    estado(
+      'estadoGoogle',
+      mensaje,
+      '#f87171'
+    );
+
+    estado(
+      'estadoLlamadas',
+      'Llamadas deshabilitadas.',
+      '#f87171'
+    );
+
+  } finally {
+
+    autenticacionEnCurso = false;
+
+  }
+
+}
+
+
+// ==========================================
+// INICIALIZAR GOOGLE
+// ==========================================
+
+function inicializarGoogle() {
+
+  if (!window.google?.accounts?.id) {
+
+    estado(
+      'estadoGoogle',
+      'No se pudo cargar Google Identity Services.',
+      '#f87171'
+    );
+
+    return;
+
+  }
+
+  google.accounts.id.initialize({
+
+    client_id: GOOGLE_CLIENT_ID,
+
+    callback: recibirCredencialGoogle,
+
+    auto_select: false
+
   });
+
+  google.accounts.id.renderButton(
+
+    document.getElementById('googleLogin'),
+
+    {
+
+      theme: 'outline',
+
+      size: 'large',
+
+      text: 'continue_with',
+
+      shape: 'rectangular',
+
+      width: 300
+
+    }
+
+  );
+
 }
-async function probarMicrofono(){
-  const boton=document.getElementById('btnMicrofono');
-  boton.disabled=true;
+
+
+// ==========================================
+// PROBAR MICRÓFONO
+// ==========================================
+
+async function probarMicrofono() {
+
+  const boton =
+    document.getElementById('btnMicrofono');
+
+  boton.disabled = true;
+
   let stream;
-  try{
-    if(!navigator.mediaDevices?.getUserMedia)throw new Error('Este navegador no permite acceder al micrófono.');
-    stream=await navigator.mediaDevices.getUserMedia({audio:true});
-    estado('estadoMicrofono','🟢 Micrófono disponible','#4ade80');
-    estado('resultadoMicrofono','El navegador permite utilizar el micrófono correctamente.');
-  }catch(error){
-    estado('estadoMicrofono','🔴 No se pudo acceder al micrófono','#f87171');
-    estado('resultadoMicrofono',error.name+': '+error.message);
-  }finally{
-    if(stream)stream.getTracks().forEach(track=>track.stop());
-    boton.disabled=false;
+
+  try {
+
+    if (!navigator.mediaDevices?.getUserMedia) {
+
+      throw new Error(
+        'Este navegador no permite acceder al micrófono.'
+      );
+
+    }
+
+    stream =
+      await navigator.mediaDevices.getUserMedia({
+        audio: true
+      });
+
+    estado(
+      'estadoMicrofono',
+      '🟢 Micrófono disponible',
+      '#4ade80'
+    );
+
+    estado(
+      'resultadoMicrofono',
+      'El navegador permite utilizar el micrófono correctamente.'
+    );
+
+  } catch (error) {
+
+    estado(
+      'estadoMicrofono',
+      '🔴 No se pudo acceder al micrófono',
+      '#f87171'
+    );
+
+    estado(
+      'resultadoMicrofono',
+      error.name + ': ' + error.message
+    );
+
+  } finally {
+
+    if (stream) {
+
+      stream.getTracks().forEach(
+        track => track.stop()
+      );
+
+    }
+
+    boton.disabled = false;
+
   }
+
 }
-document.getElementById('btnMicrofono').addEventListener('click',probarMicrofono);
-window.addEventListener('load',inicializarGoogle);
+
+
+// ==========================================
+// SOLICITAR TOKEN TWILIO VOICE
+// ==========================================
+
+async function obtenerTokenVoice() {
+
+  if (
+    !autorizado ||
+    !credencialGoogle
+  ) {
+
+    throw new Error(
+      'Debes iniciar sesión con tu cuenta institucional.'
+    );
+
+  }
+
+  // El servidor vuelve a comprobar Google
+  // y los permisos en el CRM.
+
+  const datos = await solicitarBackend(
+    TOKEN_URL,
+    credencialGoogle
+  );
+
+  if (
+    datos.success !== true ||
+    datos.autorizado !== true ||
+    !datos.token ||
+    !datos.identity ||
+    !['Admin', 'Asesor'].includes(datos.rol) ||
+    !usuarioAutorizado ||
+    datos.email !== usuarioAutorizado.email ||
+    datos.rol !== usuarioAutorizado.rol
+  ) {
+
+    throw new Error(
+      'Twilio no autorizó la emisión del token.'
+    );
+
+  }
+
+  return datos;
+
+}
+
+
+// ==========================================
+// CONECTAR TWILIO VOICE
+// ==========================================
+
+async function conectarLlamadas() {
+
+  if (
+    conexionEnCurso ||
+    dispositivoTwilio
+  ) return;
+
+  if (!autorizado) {
+
+    estado(
+      'estadoLlamadas',
+      'Primero debes autorizar tu cuenta.',
+      '#f87171'
+    );
+
+    return;
+
+  }
+
+  conexionEnCurso = true;
+
+  btnConectar.disabled = true;
+
+  estado(
+    'estadoLlamadas',
+    'Solicitando autorización de voz...',
+    '#facc15'
+  );
+
+  let nuevoDispositivo = null;
+
+  try {
+
+    // ======================================
+    // COMPROBAR SDK TWILIO
+    // ======================================
+
+    if (
+      !window.Twilio ||
+      !window.Twilio.Device
+    ) {
+
+      throw new Error(
+        'No se cargó Twilio Voice SDK. Comprueba el archivo twilio.min.js.'
+      );
+
+    }
+
+    // ======================================
+    // SOLICITAR TOKEN
+    // ======================================
+
+    const datos =
+      await obtenerTokenVoice();
+
+    estado(
+      'estadoLlamadas',
+      'Token autorizado. Registrando dispositivo...',
+      '#facc15'
+    );
+
+    // ======================================
+    // CREAR DISPOSITIVO
+    // ======================================
+
+    nuevoDispositivo =
+      new window.Twilio.Device(
+        datos.token,
+
+        {
+
+          logLevel: 1,
+
+          closeProtection: true
+
+        }
+      );
+
+    dispositivoTwilio = nuevoDispositivo;
+
+    configurarEventosTwilio(
+      nuevoDispositivo
+    );
+
+    // ======================================
+    // REGISTRAR DISPOSITIVO
+    // ======================================
+
+    await nuevoDispositivo.register();
+
+    if (
+      dispositivoTwilio !== nuevoDispositivo
+    ) return;
+
+    estado(
+      'identidadTwilio',
+      'Identidad Voice: ' + datos.identity,
+      '#93c5fd'
+    );
+
+    estado(
+      'estadoLlamadas',
+      '🟢 Conectado a Twilio Voice. Listo para recibir llamadas.',
+      '#4ade80'
+    );
+
+    btnConectar.classList.add(
+      'oculto'
+    );
+
+    btnDesconectar.classList.remove(
+      'oculto'
+    );
+
+  } catch (error) {
+
+    console.error(
+      'LIKS Voice conexión:',
+      error.message
+    );
+
+    if (nuevoDispositivo) {
+
+      try {
+        nuevoDispositivo.destroy();
+      } catch (_) {}
+
+    }
+
+    if (
+      dispositivoTwilio === nuevoDispositivo
+    ) {
+      dispositivoTwilio = null;
+    }
+
+    estado(
+      'estadoLlamadas',
+      'Error al conectar: ' + error.message,
+      '#f87171'
+    );
+
+    btnConectar.classList.remove(
+      'oculto'
+    );
+
+    btnDesconectar.classList.add(
+      'oculto'
+    );
+
+  } finally {
+
+    conexionEnCurso = false;
+
+    if (!dispositivoTwilio) {
+      btnConectar.disabled = !autorizado;
+    }
+
+  }
+
+}
+
+
+// ==========================================
+// EVENTOS DEL DISPOSITIVO TWILIO
+// ==========================================
+
+function configurarEventosTwilio(device) {
+
+  device.on('registering', () => {
+
+    if (dispositivoTwilio !== device) return;
+
+    estado(
+      'estadoLlamadas',
+      'Registrando dispositivo en Twilio...',
+      '#facc15'
+    );
+
+  });
+
+  device.on('registered', () => {
+
+    if (dispositivoTwilio !== device) return;
+
+    estado(
+      'estadoLlamadas',
+      '🟢 Dispositivo registrado y disponible.',
+      '#4ade80'
+    );
+
+  });
+
+  device.on('unregistered', () => {
+
+    if (dispositivoTwilio !== device) return;
+
+    estado(
+      'estadoLlamadas',
+      'Dispositivo sin registro. No puede recibir llamadas.',
+      '#facc15'
+    );
+
+  });
+
+  device.on('error', error => {
+
+    if (dispositivoTwilio !== device) return;
+
+    console.error(
+      'LIKS Voice SDK:',
+      error.code,
+      error.message
+    );
+
+    estado(
+      'estadoLlamadas',
+      'Twilio Voice: ' + error.message,
+      '#f87171'
+    );
+
+  });
+
+  // ======================================
+  // RENOVACIÓN DEL TOKEN
+  // ======================================
+
+  device.on('tokenWillExpire', async () => {
+
+    if (dispositivoTwilio !== device) return;
+
+    try {
+
+      const datos =
+        await obtenerTokenVoice();
+
+      if (dispositivoTwilio !== device) return;
+
+      await device.updateToken(
+        datos.token
+      );
+
+    } catch (error) {
+
+      estado(
+        'estadoLlamadas',
+        'No se pudo renovar la sesión. Desconecta y vuelve a iniciar sesión con Google.',
+        '#facc15'
+      );
+
+      console.error(
+        'LIKS Voice renovación:',
+        error.message
+      );
+
+    }
+
+  });
+
+  // ======================================
+  // LLAMADA ENTRANTE
+  // ======================================
+
+  device.on('incoming', call => {
+
+    if (dispositivoTwilio !== device) {
+
+      call.reject();
+      return;
+
+    }
+
+    if (llamadaEntrante || llamadaActiva) {
+
+      call.reject();
+      return;
+
+    }
+
+    llamadaEntrante = call;
+
+    const origen =
+      call.parameters?.From ||
+      'Número desconocido';
+
+    estado(
+      'detalleLlamada',
+      'Llamada recibida de: ' + origen,
+      '#facc15'
+    );
+
+    panelLlamada.classList.remove(
+      'oculto'
+    );
+
+    configurarEventosLlamada(call);
+
+  });
+
+}
+
+
+// ==========================================
+// EVENTOS DE LLAMADA
+// ==========================================
+
+function configurarEventosLlamada(call) {
+
+  call.on('accept', () => {
+
+    if (llamadaEntrante === call) {
+      llamadaEntrante = null;
+    }
+
+    llamadaActiva = call;
+
+    panelLlamada.classList.add(
+      'oculto'
+    );
+
+    panelLlamadaActiva.classList.remove(
+      'oculto'
+    );
+
+    estado(
+      'estadoLlamadaActiva',
+      '🟢 Llamada conectada',
+      '#4ade80'
+    );
+
+  });
+
+  call.on('disconnect', () => {
+
+    limpiarLlamada(call);
+
+  });
+
+  call.on('cancel', () => {
+
+    limpiarLlamada(call);
+
+  });
+
+  call.on('reject', () => {
+
+    limpiarLlamada(call);
+
+  });
+
+  call.on('error', error => {
+
+    console.error(
+      'LIKS Voice llamada:',
+      error.message
+    );
+
+    limpiarLlamada(call);
+
+    estado(
+      'estadoLlamadas',
+      'Error de llamada: ' + error.message,
+      '#f87171'
+    );
+
+  });
+
+}
+
+
+// ==========================================
+// RESPONDER LLAMADA
+// ==========================================
+
+function responderLlamada() {
+
+  if (!llamadaEntrante) return;
+
+  const call = llamadaEntrante;
+
+  panelLlamada.classList.add(
+    'oculto'
+  );
+
+  panelLlamadaActiva.classList.remove(
+    'oculto'
+  );
+
+  estado(
+    'estadoLlamadaActiva',
+    'Conectando llamada...',
+    '#facc15'
+  );
+
+  try {
+
+    call.accept();
+
+  } catch (error) {
+
+    limpiarLlamada(call);
+
+    estado(
+      'estadoLlamadas',
+      'No fue posible responder la llamada.',
+      '#f87171'
+    );
+
+  }
+
+}
+
+
+// ==========================================
+// RECHAZAR LLAMADA
+// ==========================================
+
+function rechazarLlamada() {
+
+  if (!llamadaEntrante) return;
+
+  const call = llamadaEntrante;
+
+  try {
+
+    call.reject();
+
+  } finally {
+
+    limpiarLlamada(call);
+
+  }
+
+}
+
+
+// ==========================================
+// FINALIZAR LLAMADA
+// ==========================================
+
+function finalizarLlamada() {
+
+  if (!llamadaActiva) return;
+
+  const call = llamadaActiva;
+
+  try {
+
+    call.disconnect();
+
+  } finally {
+
+    limpiarLlamada(call);
+
+  }
+
+}
+
+
+// ==========================================
+// LIMPIAR ESTADO DE LLAMADA
+// ==========================================
+
+function limpiarLlamada(call) {
+
+  if (llamadaEntrante === call) {
+    llamadaEntrante = null;
+  }
+
+  if (llamadaActiva === call) {
+    llamadaActiva = null;
+  }
+
+  panelLlamada.classList.add(
+    'oculto'
+  );
+
+  panelLlamadaActiva.classList.add(
+    'oculto'
+  );
+
+}
+
+
+// ==========================================
+// DESCONECTAR DISPOSITIVO
+// ==========================================
+
+function desconectarLlamadas() {
+
+  if (conexionEnCurso) return;
+
+  if (llamadaEntrante) {
+
+    try {
+      llamadaEntrante.reject();
+    } catch (_) {}
+
+  }
+
+  if (llamadaActiva) {
+
+    try {
+      llamadaActiva.disconnect();
+    } catch (_) {}
+
+  }
+
+  llamadaEntrante = null;
+  llamadaActiva = null;
+
+  panelLlamada.classList.add(
+    'oculto'
+  );
+
+  panelLlamadaActiva.classList.add(
+    'oculto'
+  );
+
+  const anterior =
+    dispositivoTwilio;
+
+  dispositivoTwilio = null;
+
+  if (anterior) {
+
+    try {
+      anterior.destroy();
+    } catch (_) {}
+
+  }
+
+  btnDesconectar.classList.add(
+    'oculto'
+  );
+
+  btnConectar.classList.remove(
+    'oculto'
+  );
+
+  btnConectar.disabled = !autorizado;
+
+  estado(
+    'identidadTwilio',
+    ''
+  );
+
+  estado(
+    'estadoLlamadas',
+    'Dispositivo desconectado. Puedes volver a conectar.',
+    '#facc15'
+  );
+
+}
+
+
+// ==========================================
+// EVENTOS DE BOTONES
+// ==========================================
+
+document.getElementById(
+  'btnMicrofono'
+).addEventListener(
+  'click',
+  probarMicrofono
+);
+
+btnConectar.addEventListener(
+  'click',
+  conectarLlamadas
+);
+
+btnDesconectar.addEventListener(
+  'click',
+  desconectarLlamadas
+);
+
+document.getElementById(
+  'btnResponder'
+).addEventListener(
+  'click',
+  responderLlamada
+);
+
+document.getElementById(
+  'btnRechazar'
+).addEventListener(
+  'click',
+  rechazarLlamada
+);
+
+document.getElementById(
+  'btnColgar'
+).addEventListener(
+  'click',
+  finalizarLlamada
+);
+
+
+// ==========================================
+// INICIALIZAR SISTEMA
+// ==========================================
+
+window.addEventListener(
+  'load',
+  inicializarGoogle
+);
+
 </script>
+
 </body>
+</html>
+
 </html>
 
 
