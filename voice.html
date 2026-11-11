@@ -1,18 +1,27 @@
 
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 
 <title>LIKS Voice</title>
 
-<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script
+  src="https://accounts.google.com/gsi/client"
+  async
+  defer>
+</script>
 
-<!-- SDK oficial Twilio Voice 2.x, alojado en GitHub Pages -->
-<script src="./twilio-voice.min.js" defer></script>
+<script
+  src="./twilio-voice.min.js"
+  defer>
+</script>
 
 <style>
+
 * {
   box-sizing: border-box;
 }
@@ -24,8 +33,8 @@ body {
   align-items: center;
   justify-content: center;
   background: #101827;
-  color: #fff;
-  font-family: Arial, sans-serif;
+  color: white;
+  font-family: Arial,sans-serif;
   padding: 20px;
 }
 
@@ -95,14 +104,6 @@ button:disabled {
   background: #b91c1c;
 }
 
-.btn-gris {
-  background: #475569;
-}
-
-.btn-gris:hover {
-  background: #334155;
-}
-
 .detalle {
   font-size: 13px;
   line-height: 1.6;
@@ -141,157 +142,182 @@ button:disabled {
 .acciones button {
   flex: 1;
 }
+
 </style>
+
 </head>
 
 <body>
 
 <main class="panel">
 
-  <h1>LIKS Voice</h1>
+<h1>LIKS Voice</h1>
 
-  <p class="subtitulo">
-    Panel de llamadas del CRM
-  </p>
+<p class="subtitulo">
+  Panel de llamadas del CRM
+</p>
 
-  <h2>Cuenta institucional</h2>
+<h2>Cuenta institucional</h2>
+
+<div
+  id="googleLogin"
+  class="google-container">
+</div>
+
+<div
+  id="estadoGoogle"
+  class="estado"
+  role="status"
+  aria-live="polite">
+  Esperando autenticación de Google Workspace
+</div>
+
+<div
+  id="usuarioGoogle"
+  class="detalle">
+</div>
+
+<hr class="separador">
+
+<h2>Micrófono</h2>
+
+<div
+  id="estadoMicrofono"
+  class="estado">
+  Micrófono pendiente de verificar
+</div>
+
+<button
+  id="btnMicrofono"
+  type="button">
+  Probar micrófono
+</button>
+
+<div
+  id="resultadoMicrofono"
+  class="detalle">
+</div>
+
+<hr class="separador">
+
+<h2>Conexión de llamadas</h2>
+
+<div
+  id="estadoLlamadas"
+  class="estado"
+  role="status"
+  aria-live="polite">
+  Pendiente de autorización del CRM
+</div>
+
+<button
+  id="btnConectar"
+  type="button"
+  disabled>
+  Conectar llamadas
+</button>
+
+<button
+  id="btnDesconectar"
+  type="button"
+  class="btn-rojo oculto">
+  Desconectar llamadas
+</button>
+
+<div
+  id="identidadTwilio"
+  class="detalle">
+</div>
+
+<div
+  id="estadoDisponibilidad"
+  class="detalle">
+</div>
+
+<section
+  id="panelLlamada"
+  class="llamada oculto">
+
+  <h2>Llamada entrante</h2>
 
   <div
-    id="googleLogin"
-    class="google-container">
-  </div>
-
-  <div
-    id="estadoGoogle"
-    class="estado"
-    role="status"
-    aria-live="polite">
-    Esperando autenticación de Google Workspace
-  </div>
-
-  <div
-    id="usuarioGoogle"
-    class="detalle">
-  </div>
-
-  <hr class="separador">
-
-  <h2>Micrófono</h2>
-
-  <div
-    id="estadoMicrofono"
+    id="detalleLlamada"
     class="estado">
-    Micrófono pendiente de verificar
   </div>
 
-  <button
-    id="btnMicrofono"
-    type="button">
-    Probar micrófono
-  </button>
-
-  <div
-    id="resultadoMicrofono"
-    class="detalle">
-  </div>
-
-  <hr class="separador">
-
-  <h2>Conexión de llamadas</h2>
-
-  <div
-    id="estadoLlamadas"
-    class="estado"
-    role="status"
-    aria-live="polite">
-    Pendiente de autorización del CRM
-  </div>
-
-  <button
-    id="btnConectar"
-    type="button"
-    disabled>
-    Conectar llamadas
-  </button>
-
-  <button
-    id="btnDesconectar"
-    type="button"
-    class="btn-rojo oculto">
-    Desconectar llamadas
-  </button>
-
-  <div
-    id="identidadTwilio"
-    class="detalle">
-  </div>
-
-  <section
-    id="panelLlamada"
-    class="llamada oculto">
-
-    <h2>Llamada entrante</h2>
-
-    <div
-      id="detalleLlamada"
-      class="estado">
-    </div>
-
-    <div class="acciones">
-
-      <button
-        id="btnResponder"
-        type="button">
-        Responder
-      </button>
-
-      <button
-        id="btnRechazar"
-        type="button"
-        class="btn-rojo">
-        Rechazar
-      </button>
-
-    </div>
-
-  </section>
-
-  <section
-    id="panelLlamadaActiva"
-    class="llamada oculto">
-
-    <h2>Llamada en curso</h2>
-
-    <div
-      id="estadoLlamadaActiva"
-      class="estado">
-      Conectando audio...
-    </div>
+  <div class="acciones">
 
     <button
-      id="btnColgar"
-      type="button"
-      class="btn-rojo">
-      Finalizar llamada
+      id="btnResponder"
+      type="button">
+      Responder
     </button>
 
-  </section>
+    <button
+      id="btnRechazar"
+      type="button"
+      class="btn-rojo">
+      Rechazar
+    </button>
 
-  <p class="aviso">
-    El acceso a LIKS Voice está restringido
-    a usuarios institucionales autorizados
-    con rol Admin o Asesor en el CRM.
-  </p>
+  </div>
+
+</section>
+
+<section
+  id="panelLlamadaActiva"
+  class="llamada oculto">
+
+  <h2>Llamada en curso</h2>
+
+  <div
+    id="estadoLlamadaActiva"
+    class="estado">
+    Conectando audio...
+  </div>
+
+  <button
+    id="btnColgar"
+    type="button"
+    class="btn-rojo">
+    Finalizar llamada
+  </button>
+
+</section>
+
+<p class="aviso">
+  LIKS Voice está disponible exclusivamente
+  para usuarios institucionales autorizados
+  con rol Admin o Asesor.
+</p>
 
 </main>
 
 <script>
+
 'use strict';
 
-// ==========================================
-// LIKS CRM V2
-// PANEL TWILIO VOICE
-// ==========================================
+/**
+ * ==========================================
+ * LIKS CRM V2
+ * TWILIO VOICE
+ * DISPONIBILIDAD AUTOMÁTICA
+ * ==========================================
+ *
+ * FUNCIONES:
+ *
+ * 1. Autenticación Google Workspace.
+ * 2. Autorización mediante CRM.
+ * 3. Conexión Twilio Voice.
+ * 4. Registro de disponibilidad.
+ * 5. Renovación periódica cada 30 segundos.
+ * 6. Desconexión de disponibilidad.
+ * 7. Recepción y atención de llamadas.
+ *
+ * La clave privada permanece en Twilio.
+ *
+ * No modifica mensajería WhatsApp.
+ */
 
 // ==========================================
 // CONFIGURACIÓN
@@ -300,27 +326,45 @@ button:disabled {
 const GOOGLE_CLIENT_ID =
   '444251489795-ckib5et1sfk71ib27699srg5u6arq748.apps.googleusercontent.com';
 
+const TWILIO_BASE =
+  'https://liks-crm-voice-4694.twil.io';
+
 const AUTH_URL =
-  'https://liks-crm-voice-4694.twil.io/auth-google';
+  TWILIO_BASE + '/auth-google';
 
 const TOKEN_URL =
-  'https://liks-crm-voice-4694.twil.io/token';
+  TWILIO_BASE + '/token';
+
+const AVAILABILITY_URL =
+  TWILIO_BASE + '/availability';
+
+const HEARTBEAT_INTERVAL = 30000;
 
 
 // ==========================================
-// ESTADO DE LA APLICACIÓN
+// VARIABLES DE ESTADO
 // ==========================================
 
 let autenticacionEnCurso = false;
 let conexionEnCurso = false;
+let desconexionEnCurso = false;
+
 let autorizado = false;
 
 let credencialGoogle = null;
 let usuarioAutorizado = null;
 
 let dispositivoTwilio = null;
+let identidadActual = null;
+
 let llamadaEntrante = null;
 let llamadaActiva = null;
+
+let disponibilidadConfirmada = false;
+let sincronizacionEnCurso = null;
+let intervaloDisponibilidad = null;
+
+let generacionConexion = 0;
 
 
 // ==========================================
@@ -341,7 +385,7 @@ const panelLlamadaActiva =
 
 
 // ==========================================
-// MOSTRAR ESTADOS
+// MOSTRAR MENSAJES
 // ==========================================
 
 function estado(
@@ -362,29 +406,28 @@ function estado(
 
 
 // ==========================================
-// SOLICITUD SEGURA AL BACKEND
+// SOLICITUD AL BACKEND
 // ==========================================
 
 async function solicitarBackend(
   url,
-  credential
+  campos,
+  tiempoMaximo = 20000
 ) {
 
   const controlador =
     new AbortController();
 
-  const timeout =
-    setTimeout(
-      () => controlador.abort(),
-      20000
-    );
+  const timeout = setTimeout(
+    () => controlador.abort(),
+    tiempoMaximo
+  );
 
   try {
 
     const respuesta = await fetch(
       url,
       {
-
         method: 'POST',
 
         headers: {
@@ -392,16 +435,15 @@ async function solicitarBackend(
             'application/x-www-form-urlencoded;charset=UTF-8'
         },
 
-        body: new URLSearchParams({
-          credential: credential
-        }).toString(),
+        body: new URLSearchParams(
+          campos
+        ).toString(),
 
         mode: 'cors',
 
         cache: 'no-store',
 
         signal: controlador.signal
-
       }
     );
 
@@ -414,18 +456,24 @@ async function solicitarBackend(
     } catch (_) {
 
       throw new Error(
-        'Twilio devolvió una respuesta inválida.'
+        'El servidor devolvió una respuesta inválida.'
       );
 
     }
 
     if (!respuesta.ok) {
 
-      throw new Error(
+      const error = new Error(
         datos.error ||
         datos.mensaje ||
-        'Error de autorización del servidor.'
+        'Error de comunicación con el servidor.'
       );
+
+      error.status = respuesta.status;
+      error.retryable =
+        datos.retryable === true;
+
+      throw error;
 
     }
 
@@ -441,7 +489,7 @@ async function solicitarBackend(
 
 
 // ==========================================
-// AUTENTICACIÓN GOOGLE WORKSPACE
+// GOOGLE WORKSPACE
 // ==========================================
 
 async function recibirCredencialGoogle(
@@ -466,24 +514,19 @@ async function recibirCredencialGoogle(
 
   }
 
-  autenticacionEnCurso = true;
-
-  // Una nueva autenticación no debe sustituir
-  // la sesión de voz mientras existan llamadas.
-
-  if (dispositivoTwilio) {
-
-    autenticacionEnCurso = false;
+  if (dispositivoTwilio || conexionEnCurso) {
 
     estado(
       'estadoGoogle',
-      'Desconecta primero LIKS Voice para cambiar de sesión.',
+      'Desconecta LIKS Voice antes de cambiar la sesión.',
       '#facc15'
     );
 
     return;
 
   }
+
+  autenticacionEnCurso = true;
 
   autorizado = false;
   credencialGoogle = null;
@@ -503,7 +546,9 @@ async function recibirCredencialGoogle(
 
     const datos = await solicitarBackend(
       AUTH_URL,
-      respuesta.credential
+      {
+        credential: respuesta.credential
+      }
     );
 
     if (
@@ -526,29 +571,20 @@ async function recibirCredencialGoogle(
 
     estado(
       'usuarioGoogle',
-
       datos.nombre
         ? datos.nombre + ' · ' + datos.email
-        : datos.email ||
-          'Cuenta institucional verificada',
-
+        : datos.email,
       '#93c5fd'
     );
 
-    // ======================================
-    // COMPROBAR AUTORIZACIÓN CRM
-    // ======================================
-
     if (
       datos.autorizado !== true ||
-      !['Admin', 'Asesor'].includes(
-        datos.rol
-      )
+      !['Admin', 'Asesor'].includes(datos.rol)
     ) {
 
       estado(
         'estadoLlamadas',
-        'Cuenta verificada, pero sin permisos para LIKS Voice.',
+        'Cuenta verificada, pero sin permisos de LIKS Voice.',
         '#f87171'
       );
 
@@ -562,13 +598,9 @@ async function recibirCredencialGoogle(
       respuesta.credential;
 
     usuarioAutorizado = {
-
       email: datos.email,
-
       nombre: datos.nombre,
-
       rol: datos.rol
-
     };
 
     estado(
@@ -587,16 +619,11 @@ async function recibirCredencialGoogle(
     credencialGoogle = null;
     usuarioAutorizado = null;
 
-    btnConectar.disabled = true;
-
-    const mensaje =
-      error.name === 'AbortError'
-        ? 'La verificación tardó demasiado.'
-        : error.message;
-
     estado(
       'estadoGoogle',
-      mensaje,
+      error.name === 'AbortError'
+        ? 'La verificación tardó demasiado.'
+        : error.message,
       '#f87171'
     );
 
@@ -634,40 +661,27 @@ function inicializarGoogle() {
   }
 
   google.accounts.id.initialize({
-
     client_id: GOOGLE_CLIENT_ID,
-
     callback: recibirCredencialGoogle,
-
     auto_select: false
-
   });
 
   google.accounts.id.renderButton(
-
     document.getElementById('googleLogin'),
-
     {
-
       theme: 'outline',
-
       size: 'large',
-
       text: 'continue_with',
-
       shape: 'rectangular',
-
       width: 300
-
     }
-
   );
 
 }
 
 
 // ==========================================
-// PROBAR MICRÓFONO
+// MICRÓFONO
 // ==========================================
 
 async function probarMicrofono() {
@@ -736,7 +750,7 @@ async function probarMicrofono() {
 
 
 // ==========================================
-// SOLICITAR TOKEN TWILIO VOICE
+// OBTENER TOKEN VOICE
 // ==========================================
 
 async function obtenerTokenVoice() {
@@ -747,17 +761,16 @@ async function obtenerTokenVoice() {
   ) {
 
     throw new Error(
-      'Debes iniciar sesión con tu cuenta institucional.'
+      'Debes autenticarte con Google Workspace.'
     );
 
   }
 
-  // El servidor vuelve a comprobar Google
-  // y los permisos en el CRM.
-
   const datos = await solicitarBackend(
     TOKEN_URL,
-    credencialGoogle
+    {
+      credential: credencialGoogle
+    }
   );
 
   if (
@@ -765,19 +778,227 @@ async function obtenerTokenVoice() {
     datos.autorizado !== true ||
     !datos.token ||
     !datos.identity ||
-    !['Admin', 'Asesor'].includes(datos.rol) ||
     !usuarioAutorizado ||
     datos.email !== usuarioAutorizado.email ||
     datos.rol !== usuarioAutorizado.rol
   ) {
 
     throw new Error(
-      'Twilio no autorizó la emisión del token.'
+      'Twilio no autorizó el token.'
     );
 
   }
 
   return datos;
+
+}
+
+
+// ==========================================
+// DISPONIBILIDAD EN GOOGLE SHEETS
+// ==========================================
+
+async function actualizarDisponibilidad(
+  operacion
+) {
+
+  if (
+    !autorizado ||
+    !credencialGoogle
+  ) {
+
+    throw new Error(
+      'No existe autorización institucional.'
+    );
+
+  }
+
+  const datos = await solicitarBackend(
+    AVAILABILITY_URL,
+    {
+      credential: credencialGoogle,
+      operacion: operacion
+    },
+    25000
+  );
+
+  if (
+    datos.success !== true ||
+    datos.autorizado !== true ||
+    datos.operacion !== operacion ||
+    datos.identity !== identidadActual
+  ) {
+
+    throw new Error(
+      'No se pudo confirmar la disponibilidad.'
+    );
+
+  }
+
+  if (
+    operacion === 'desconectar' &&
+    datos.disponible !== false
+  ) {
+
+    throw new Error(
+      'El servidor no confirmó la desconexión.'
+    );
+
+  }
+
+  if (
+    operacion !== 'desconectar' &&
+    datos.disponible !== true
+  ) {
+
+    throw new Error(
+      'El servidor no confirmó la disponibilidad.'
+    );
+
+  }
+
+  return datos;
+
+}
+
+
+// ==========================================
+// SINCRONIZAR DISPONIBILIDAD
+// ==========================================
+
+function sincronizarDisponibilidad(
+  operacion
+) {
+
+  if (sincronizacionEnCurso) {
+
+    return sincronizacionEnCurso.then(
+      () => sincronizarDisponibilidad(
+        operacion
+      )
+    );
+
+  }
+
+  const proceso =
+    actualizarDisponibilidad(operacion);
+
+  sincronizacionEnCurso = proceso;
+
+  proceso.finally(() => {
+
+    if (sincronizacionEnCurso === proceso) {
+      sincronizacionEnCurso = null;
+    }
+
+  }).catch(() => {});
+
+  return proceso;
+
+}
+
+
+// ==========================================
+// RENOVAR DISPONIBILIDAD
+// ==========================================
+
+async function renovarDisponibilidad() {
+
+  if (
+    !dispositivoTwilio ||
+    dispositivoTwilio.state !== 'registered' ||
+    desconexionEnCurso
+  ) {
+    return;
+  }
+
+  if (sincronizacionEnCurso) {
+    return;
+  }
+
+  try {
+
+    const operacion =
+      disponibilidadConfirmada
+        ? 'renovar'
+        : 'conectar';
+
+    await sincronizarDisponibilidad(
+      operacion
+    );
+
+    disponibilidadConfirmada = true;
+
+    estado(
+      'estadoDisponibilidad',
+      '🟢 Disponibilidad sincronizada con el CRM.',
+      '#4ade80'
+    );
+
+    estado(
+      'estadoLlamadas',
+      '🟢 Conectado a Twilio Voice. Listo para recibir llamadas.',
+      '#4ade80'
+    );
+
+  } catch (error) {
+
+    disponibilidadConfirmada = false;
+
+    console.error(
+      'LIKS Voice disponibilidad:',
+      error.message
+    );
+
+    estado(
+      'estadoDisponibilidad',
+      '⚠️ No se confirmó la disponibilidad: ' +
+      error.message,
+      '#facc15'
+    );
+
+    estado(
+      'estadoLlamadas',
+      'Twilio conectado, pero el CRM todavía no confirma disponibilidad.',
+      '#facc15'
+    );
+
+  }
+
+}
+
+
+// ==========================================
+// INICIAR RENOVACIÓN AUTOMÁTICA
+// ==========================================
+
+function iniciarRenovacionDisponibilidad() {
+
+  detenerRenovacionDisponibilidad();
+
+  intervaloDisponibilidad = setInterval(
+    renovarDisponibilidad,
+    HEARTBEAT_INTERVAL
+  );
+
+}
+
+
+// ==========================================
+// DETENER RENOVACIÓN
+// ==========================================
+
+function detenerRenovacionDisponibilidad() {
+
+  if (intervaloDisponibilidad) {
+
+    clearInterval(
+      intervaloDisponibilidad
+    );
+
+    intervaloDisponibilidad = null;
+
+  }
 
 }
 
@@ -790,8 +1011,11 @@ async function conectarLlamadas() {
 
   if (
     conexionEnCurso ||
+    desconexionEnCurso ||
     dispositivoTwilio
-  ) return;
+  ) {
+    return;
+  }
 
   if (!autorizado) {
 
@@ -802,10 +1026,12 @@ async function conectarLlamadas() {
     );
 
     return;
-
   }
 
   conexionEnCurso = true;
+
+  const generacion =
+    ++generacionConexion;
 
   btnConectar.disabled = true;
 
@@ -819,17 +1045,13 @@ async function conectarLlamadas() {
 
   try {
 
-    // ======================================
-    // COMPROBAR SDK TWILIO
-    // ======================================
-
     if (
       !window.Twilio ||
       !window.Twilio.Device
     ) {
 
       throw new Error(
-        'No se cargó Twilio Voice SDK. Comprueba el archivo twilio.min.js.'
+        'No se cargó Twilio Voice SDK.'
       );
 
     }
@@ -841,11 +1063,14 @@ async function conectarLlamadas() {
     const datos =
       await obtenerTokenVoice();
 
-    estado(
-      'estadoLlamadas',
-      'Token autorizado. Registrando dispositivo...',
-      '#facc15'
-    );
+    if (
+      generacion !== generacionConexion
+    ) {
+      return;
+    }
+
+    identidadActual =
+      datos.identity;
 
     // ======================================
     // CREAR DISPOSITIVO
@@ -854,42 +1079,52 @@ async function conectarLlamadas() {
     nuevoDispositivo =
       new window.Twilio.Device(
         datos.token,
-
         {
-
           logLevel: 1,
-
           closeProtection: true
-
         }
       );
 
-    dispositivoTwilio = nuevoDispositivo;
+    dispositivoTwilio =
+      nuevoDispositivo;
 
     configurarEventosTwilio(
       nuevoDispositivo
     );
 
     // ======================================
-    // REGISTRAR DISPOSITIVO
+    // REGISTRAR EN TWILIO
     // ======================================
+
+    estado(
+      'estadoLlamadas',
+      'Registrando dispositivo...',
+      '#facc15'
+    );
 
     await nuevoDispositivo.register();
 
     if (
+      generacion !== generacionConexion ||
       dispositivoTwilio !== nuevoDispositivo
-    ) return;
+    ) {
+      return;
+    }
+
+    if (
+      nuevoDispositivo.state !== 'registered'
+    ) {
+
+      throw new Error(
+        'Twilio no confirmó el registro.'
+      );
+
+    }
 
     estado(
       'identidadTwilio',
       'Identidad Voice: ' + datos.identity,
       '#93c5fd'
-    );
-
-    estado(
-      'estadoLlamadas',
-      '🟢 Conectado a Twilio Voice. Listo para recibir llamadas.',
-      '#4ade80'
     );
 
     btnConectar.classList.add(
@@ -900,12 +1135,28 @@ async function conectarLlamadas() {
       'oculto'
     );
 
+    // ======================================
+    // REGISTRAR DISPONIBILIDAD CRM
+    // ======================================
+
+    estado(
+      'estadoLlamadas',
+      'Twilio conectado. Sincronizando con el CRM...',
+      '#facc15'
+    );
+
+    iniciarRenovacionDisponibilidad();
+
+    await renovarDisponibilidad();
+
   } catch (error) {
 
     console.error(
       'LIKS Voice conexión:',
       error.message
     );
+
+    detenerRenovacionDisponibilidad();
 
     if (nuevoDispositivo) {
 
@@ -921,11 +1172,8 @@ async function conectarLlamadas() {
       dispositivoTwilio = null;
     }
 
-    estado(
-      'estadoLlamadas',
-      'Error al conectar: ' + error.message,
-      '#f87171'
-    );
+    identidadActual = null;
+    disponibilidadConfirmada = false;
 
     btnConectar.classList.remove(
       'oculto'
@@ -935,12 +1183,21 @@ async function conectarLlamadas() {
       'oculto'
     );
 
+    estado(
+      'estadoLlamadas',
+      'Error al conectar: ' + error.message,
+      '#f87171'
+    );
+
   } finally {
 
     conexionEnCurso = false;
 
     if (!dispositivoTwilio) {
-      btnConectar.disabled = !autorizado;
+
+      btnConectar.disabled =
+        !autorizado;
+
     }
 
   }
@@ -949,14 +1206,18 @@ async function conectarLlamadas() {
 
 
 // ==========================================
-// EVENTOS DEL DISPOSITIVO TWILIO
+// EVENTOS TWILIO DEVICE
 // ==========================================
 
-function configurarEventosTwilio(device) {
+function configurarEventosTwilio(
+  device
+) {
 
   device.on('registering', () => {
 
     if (dispositivoTwilio !== device) return;
+
+    disponibilidadConfirmada = false;
 
     estado(
       'estadoLlamadas',
@@ -972,9 +1233,17 @@ function configurarEventosTwilio(device) {
 
     estado(
       'estadoLlamadas',
-      '🟢 Dispositivo registrado y disponible.',
-      '#4ade80'
+      'Twilio registrado. Verificando disponibilidad...',
+      '#facc15'
     );
+
+    if (!conexionEnCurso) {
+
+      iniciarRenovacionDisponibilidad();
+
+      renovarDisponibilidad();
+
+    }
 
   });
 
@@ -982,9 +1251,19 @@ function configurarEventosTwilio(device) {
 
     if (dispositivoTwilio !== device) return;
 
+    detenerRenovacionDisponibilidad();
+
+    disponibilidadConfirmada = false;
+
     estado(
       'estadoLlamadas',
-      'Dispositivo sin registro. No puede recibir llamadas.',
+      'Dispositivo sin registro en Twilio.',
+      '#facc15'
+    );
+
+    estado(
+      'estadoDisponibilidad',
+      'El dispositivo no puede recibir llamadas en este momento.',
       '#facc15'
     );
 
@@ -1009,43 +1288,60 @@ function configurarEventosTwilio(device) {
   });
 
   // ======================================
-  // RENOVACIÓN DEL TOKEN
+  // RENOVACIÓN TOKEN TWILIO
   // ======================================
 
-  device.on('tokenWillExpire', async () => {
+  device.on(
+    'tokenWillExpire',
+    async () => {
 
-    if (dispositivoTwilio !== device) return;
+      if (
+        dispositivoTwilio !== device ||
+        desconexionEnCurso
+      ) {
+        return;
+      }
 
-    try {
+      try {
 
-      const datos =
-        await obtenerTokenVoice();
+        const datos =
+          await obtenerTokenVoice();
 
-      if (dispositivoTwilio !== device) return;
+        if (
+          dispositivoTwilio !== device ||
+          datos.identity !== identidadActual
+        ) {
+          return;
+        }
 
-      await device.updateToken(
-        datos.token
-      );
+        await device.updateToken(
+          datos.token
+        );
 
-    } catch (error) {
+        console.log(
+          'LIKS Voice: token renovado.'
+        );
 
-      estado(
-        'estadoLlamadas',
-        'No se pudo renovar la sesión. Desconecta y vuelve a iniciar sesión con Google.',
-        '#facc15'
-      );
+      } catch (error) {
 
-      console.error(
-        'LIKS Voice renovación:',
-        error.message
-      );
+        console.error(
+          'LIKS Voice renovación token:',
+          error.message
+        );
+
+        estado(
+          'estadoLlamadas',
+          'No se pudo renovar la sesión. Puede ser necesario iniciar sesión nuevamente con Google.',
+          '#facc15'
+        );
+
+      }
 
     }
-
-  });
+  );
 
   // ======================================
-  // LLAMADA ENTRANTE
+  // LLAMADAS ENTRANTES
   // ======================================
 
   device.on('incoming', call => {
@@ -1057,7 +1353,10 @@ function configurarEventosTwilio(device) {
 
     }
 
-    if (llamadaEntrante || llamadaActiva) {
+    if (
+      llamadaEntrante ||
+      llamadaActiva
+    ) {
 
       call.reject();
       return;
@@ -1080,7 +1379,9 @@ function configurarEventosTwilio(device) {
       'oculto'
     );
 
-    configurarEventosLlamada(call);
+    configurarEventosLlamada(
+      call
+    );
 
   });
 
@@ -1091,7 +1392,9 @@ function configurarEventosTwilio(device) {
 // EVENTOS DE LLAMADA
 // ==========================================
 
-function configurarEventosLlamada(call) {
+function configurarEventosLlamada(
+  call
+) {
 
   call.on('accept', () => {
 
@@ -1118,21 +1421,15 @@ function configurarEventosLlamada(call) {
   });
 
   call.on('disconnect', () => {
-
     limpiarLlamada(call);
-
   });
 
   call.on('cancel', () => {
-
     limpiarLlamada(call);
-
   });
 
   call.on('reject', () => {
-
     limpiarLlamada(call);
-
   });
 
   call.on('error', error => {
@@ -1163,7 +1460,8 @@ function responderLlamada() {
 
   if (!llamadaEntrante) return;
 
-  const call = llamadaEntrante;
+  const call =
+    llamadaEntrante;
 
   panelLlamada.classList.add(
     'oculto'
@@ -1206,7 +1504,8 @@ function rechazarLlamada() {
 
   if (!llamadaEntrante) return;
 
-  const call = llamadaEntrante;
+  const call =
+    llamadaEntrante;
 
   try {
 
@@ -1229,7 +1528,8 @@ function finalizarLlamada() {
 
   if (!llamadaActiva) return;
 
-  const call = llamadaActiva;
+  const call =
+    llamadaActiva;
 
   try {
 
@@ -1245,7 +1545,7 @@ function finalizarLlamada() {
 
 
 // ==========================================
-// LIMPIAR ESTADO DE LLAMADA
+// LIMPIAR LLAMADA
 // ==========================================
 
 function limpiarLlamada(call) {
@@ -1270,28 +1570,111 @@ function limpiarLlamada(call) {
 
 
 // ==========================================
-// DESCONECTAR DISPOSITIVO
+// DESCONECTAR LIKS VOICE
 // ==========================================
 
-function desconectarLlamadas() {
+async function desconectarLlamadas() {
 
-  if (conexionEnCurso) return;
+  if (
+    desconexionEnCurso ||
+    conexionEnCurso
+  ) {
+    return;
+  }
 
-  if (llamadaEntrante) {
+  if (
+    llamadaEntrante ||
+    llamadaActiva
+  ) {
+
+    alert(
+      'Finaliza o rechaza la llamada antes de desconectar LIKS Voice.'
+    );
+
+    return;
+  }
+
+  desconexionEnCurso = true;
+
+  btnDesconectar.disabled = true;
+
+  detenerRenovacionDisponibilidad();
+
+  // ========================================
+  // FINALIZAR SINCRONIZACIÓN PENDIENTE
+  // ========================================
+
+  if (sincronizacionEnCurso) {
 
     try {
-      llamadaEntrante.reject();
+
+      await sincronizacionEnCurso;
+
     } catch (_) {}
 
   }
 
-  if (llamadaActiva) {
+  // ========================================
+  // CANCELAR DISPONIBILIDAD
+  // ========================================
 
-    try {
-      llamadaActiva.disconnect();
-    } catch (_) {}
+  try {
+
+    await sincronizarDisponibilidad(
+      'desconectar'
+    );
+
+    disponibilidadConfirmada = false;
+
+    estado(
+      'estadoDisponibilidad',
+      'Disponibilidad desactivada en el CRM.',
+      '#d1d5db'
+    );
+
+  } catch (error) {
+
+    console.error(
+      'LIKS Voice desconexión CRM:',
+      error.message
+    );
+
+    estado(
+      'estadoDisponibilidad',
+      'No se confirmó la desconexión del CRM. El registro dejará de ser vigente al expirar su actividad.',
+      '#facc15'
+    );
 
   }
+
+  // ========================================
+  // DESTRUIR DISPOSITIVO TWILIO
+  // ========================================
+
+  const anterior =
+    dispositivoTwilio;
+
+  dispositivoTwilio = null;
+
+  if (anterior) {
+
+    try {
+
+      anterior.destroy();
+
+    } catch (error) {
+
+      console.error(
+        'Error al destruir dispositivo:',
+        error.message
+      );
+
+    }
+
+  }
+
+  identidadActual = null;
+  disponibilidadConfirmada = false;
 
   llamadaEntrante = null;
   llamadaActiva = null;
@@ -1304,19 +1687,6 @@ function desconectarLlamadas() {
     'oculto'
   );
 
-  const anterior =
-    dispositivoTwilio;
-
-  dispositivoTwilio = null;
-
-  if (anterior) {
-
-    try {
-      anterior.destroy();
-    } catch (_) {}
-
-  }
-
   btnDesconectar.classList.add(
     'oculto'
   );
@@ -1325,7 +1695,11 @@ function desconectarLlamadas() {
     'oculto'
   );
 
-  btnConectar.disabled = !autorizado;
+  btnConectar.disabled =
+    !autorizado;
+
+  btnDesconectar.disabled =
+    false;
 
   estado(
     'identidadTwilio',
@@ -1334,11 +1708,48 @@ function desconectarLlamadas() {
 
   estado(
     'estadoLlamadas',
-    'Dispositivo desconectado. Puedes volver a conectar.',
+    'Dispositivo desconectado.',
     '#facc15'
   );
 
+  desconexionEnCurso = false;
+
 }
+
+
+// ==========================================
+// CIERRE INESPERADO
+// ==========================================
+
+/*
+ * Si la ventana se cierra de forma
+ * inesperada, el navegador detiene
+ * el dispositivo y los temporizadores.
+ *
+ * No se envían solicitudes con
+ * credenciales durante unload.
+ *
+ * El CRM dejará de considerar
+ * disponible al asesor cuando
+ * expire la vigencia de 90 segundos.
+ */
+
+window.addEventListener(
+  'pagehide',
+  function () {
+
+    detenerRenovacionDisponibilidad();
+
+    if (dispositivoTwilio) {
+
+      try {
+        dispositivoTwilio.destroy();
+      } catch (_) {}
+
+    }
+
+  }
+);
 
 
 // ==========================================
@@ -1385,7 +1796,7 @@ document.getElementById(
 
 
 // ==========================================
-// INICIALIZAR SISTEMA
+// INICIALIZACIÓN
 // ==========================================
 
 window.addEventListener(
@@ -1397,7 +1808,3 @@ window.addEventListener(
 
 </body>
 </html>
-
-</html>
-
-
