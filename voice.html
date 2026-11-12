@@ -142,7 +142,7 @@ button:disabled{opacity:.5;cursor:not-allowed}
 
 <main class="panel">
 
-<h1>LIKS Voice</h1>
+<h1>LIKS Call</h1>
 <p class="subtitulo">Panel de llamadas CRM LIKS</p>
 
 <h2>Cuenta institucional</h2>
@@ -512,7 +512,7 @@ async function recibirCredencialGoogle(respuesta) {
 
     estado(
       'estadoGoogle',
-      'Desconecta LIKS Voice antes de cambiar la sesión.',
+      'Desconecta LIKS Call antes de cambiar la sesión.',
       '#facc15'
     );
 
@@ -574,7 +574,7 @@ async function recibirCredencialGoogle(respuesta) {
 
       estado(
         'estadoLlamadas',
-        'Cuenta sin permisos para LIKS Voice.',
+        'Cuenta sin permisos para LIKS Call.',
         '#f87171'
       );
 
@@ -882,7 +882,7 @@ async function renovarDisponibilidad() {
     disponibilidadConfirmada = false;
 
     console.error(
-      'LIKS Voice disponibilidad:',
+      'LIKS Call disponibilidad:',
       error.message
     );
 
@@ -1128,7 +1128,7 @@ function configurarEventosTwilio(device) {
     if (dispositivoTwilio !== device) return;
 
     console.error(
-      'LIKS Voice SDK:',
+      'LIKS Call SDK:',
       error.code,
       error.message
     );
@@ -1164,7 +1164,7 @@ function configurarEventosTwilio(device) {
     } catch (error) {
 
       console.error(
-        'LIKS Voice renovación token:',
+        'LIKS Call renovación token:',
         error.message
       );
 
@@ -1269,7 +1269,7 @@ async function realizarLlamadaSaliente() {
 
     estado(
       'estadoSaliente',
-      'Conecta LIKS Voice y confirma disponibilidad antes de llamar.',
+      'Conecta LIKS Call y confirma disponibilidad antes de llamar.',
       '#f87171'
     );
 
@@ -1357,7 +1357,7 @@ async function realizarLlamadaSaliente() {
   } catch (error) {
 
     console.error(
-      'LIKS Voice llamada saliente:',
+      'LIKS Call llamada saliente:',
       error.message
     );
 
@@ -1452,7 +1452,7 @@ function configurarEventosLlamada(call, tipo) {
   call.on('error', error => {
 
     console.error(
-      'LIKS Voice llamada:',
+      'LIKS Call llamada:',
       error.message
     );
 
@@ -1603,7 +1603,7 @@ async function desconectarLlamadas() {
   ) {
 
     alert(
-      'Finaliza la llamada actual antes de desconectar LIKS Voice.'
+      'Finaliza la llamada actual antes de desconectar LIKS Call.'
     );
 
     return;
@@ -1635,7 +1635,7 @@ async function desconectarLlamadas() {
   } catch (error) {
 
     console.error(
-      'LIKS Voice desconexión CRM:',
+      'LIKS Call desconexión CRM:',
       error.message
     );
 
